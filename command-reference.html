@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Reference | Quick Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #141b3d;
+            --bg-card: #1a2351;
+            --accent-primary: #00f5ff;
+            --accent-secondary: #7c3aed;
+            --text-primary: #e6eeff;
+            --text-secondary: #8b9dc3;
+            --text-muted: #5a6b8c;
+            --border-color: #2d3a5f;
+            --success: #22c55e;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 245, 255, 0.1) 0%, transparent 50%);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .search-container {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            margin-bottom: 40px;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.1);
+        }
+
+        #searchInput::placeholder {
+            color: var(--text-muted);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            border-color: transparent;
+            color: white;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .command-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .command-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .command-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 245, 255, 0.15);
+        }
+
+        .command-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .command-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .command-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .copy-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .command-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--accent-primary);
+            background: var(--bg-primary);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            word-break: break-all;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .command-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Command Reference</h1>
+            <p class="subtitle">Ricky's Commands</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalCommands">0</div>
+                <div class="stat-label">Commands</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="categoryCount">0</div>
+                <div class="stat-label">Categories</div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput"
+                    placeholder="Search commands... (e.g., 'powershell', 'microsoft 365', 'windows')"
+                    autocomplete="off">
+            </div>
+            <div class="filters" id="filters"></div>
+        </div>
+
+        <div id="commandsContainer"></div>
+        <div id="noResults" class="no-results" style="display: none;">
+            No commands found. Try a different search term.
+        </div>
+    </div>
+
+    <script>
+        // YOUR COMMANDS DATABASE - CUSTOMIZE THIS!
+        const commands = {
+            'PowerShell': [
+                {
+                    name: 'Reestablish domain trust',
+                    command: 'Test-ComputerSecureChannel -Repair -Credential (Get-Credential)',
+                    description: 'Repair broken trust relationship between computer and domain'
+                },
+                {
+                    name: 'Get installed printers',
+                    command: 'Get-Printer | Format-List Name',
+                    description: 'List all installed printers with detailed formatting'
+                },
+                {
+                    name: 'Rename printer',
+                    command: 'Rename-Printer -Name "Current Printer Name" -NewName "New Printer Name"',
+                    description: 'Change the display name of an installed printer'
+                },
+                {
+                    name: 'Get running services',
+                    command: 'Get-Service | Where-Object {$_.Status -eq "Running"} | Sort-Object DisplayName',
+                    description: 'List all active Windows services alphabetically'
+                },
+                {
+                    name: 'Restart a service',
+                    command: 'Restart-Service -Name "ServiceName" -Force',
+                    description: 'PowerShell: Force restart a Windows service'
+                },
+                {
+                    name: 'Check network adapter info',
+                    command: 'ipconfig /all',
+                    description: 'Display detailed network configuration for all adapters'
+                },
+                {
+                    name: 'Flush DNS cache',
+                    command: 'ipconfig /flushdns',
+                    description: 'Clear DNS resolver cache to fix connectivity issues'
+                },
+                {
+                    name: 'Test network connectivity',
+                    command: 'Test-NetConnection -ComputerName google.com -Port 443',
+                    description: 'PowerShell: Check if specific port is reachable on remote host'
+                },
+                {
+                    name: 'View event logs (errors)',
+                    command: 'Get-EventLog -LogName System -EntryType Error -Newest 50',
+                    description: 'PowerShell: Show 50 most recent system errors'
+                },
+                {
+                    name: 'Check Windows Update status',
+                    command: 'Get-WindowsUpdate',
+                    description: 'PowerShell: List available Windows updates (requires PSWindowsUpdate module)'
+                }
+            ],
+            'Command Prompt': [
+                {
+                    name: 'Open User Profiles GUI',
+                    command: 'SystemPropertiesAdvanced.exe',
+                    description: 'Launch System Properties > Advanced tab for user profile management'
+                },
+                {
+                    name: 'Open Device Manager',
+                    command: 'devmgmt.msc',
+                    description: 'Launch Device Manager to manage hardware devices'
+                },
+                {
+                    name: 'Install printer (admin wizard)',
+                    command: 'rundll32 printui.dll,PrintUIEntry /il',
+                    description: 'Opens the Add Printer wizard with administrator privileges'
+                },
+                {
+                    name: 'Check power options',
+                    command: 'powercfg /a',
+                    description: 'Display available sleep states and power options'
+                },
+                {
+                    name: 'Disable hibernation',
+                    command: 'powercfg /hibernate off',
+                    description: 'Turn off hibernation and delete hiberfil.sys to free disk space'
+                },
+                {
+                    name: 'Network adapter info',
+                    command: 'ipconfig /all | more',
+                    description: 'Display detailed network configuration for all adapters'
+                },
+                {
+                    name: 'Flush DNS cache',
+                    command: 'ipconfig /flushdns',
+                    description: 'Clear DNS resolver cache to fix connectivity issues'
+                },
+                {
+                    name: 'Renew IP address',
+                    command: 'ipconfig /release && ipconfig /renew',
+                    description: 'Release and obtain new IP address from DHCP'
+                },
+                {
+                    name: 'Test connectivity',
+                    command: 'ping google.com -t',
+                    description: 'Continuous ping to test network stability (Ctrl+C to stop)'
+                },
+                {
+                    name: 'Trace network route',
+                    command: 'tracert google.com',
+                    description: 'Show path packets take to reach destination'
+                },
+                {
+                    name: 'View network connections',
+                    command: 'netstat -ano | findstr ESTABLISHED',
+                    description: 'Show active network connections with process IDs'
+                },
+            ],
+            'Windows Repair': [
+                {
+                    name: '1️⃣ Initial SFC Scan',
+                    command: 'sfc /scannow',
+                    description: 'First pass: Scan and repair corrupted system files'
+                },
+                {
+                    name: '2️⃣ DISM Check Health',
+                    command: 'Dism.exe /online /Cleanup-Image /checkhealth',
+                    description: 'Quick check if component store has corruption'
+                },
+                {
+                    name: '3️⃣ DISM Scan Health',
+                    command: 'Dism.exe /online /Cleanup-Image /scanhealth',
+                    description: 'Detailed scan for component store issues'
+                },
+                {
+                    name: '4️⃣ DISM Restore Health',
+                    command: 'Dism.exe /online /Cleanup-Image /Restorehealth',
+                    description: 'Repair component store using Windows Update'
+                },
+                {
+                    name: '5️⃣ Verify SFC Scan',
+                    command: 'sfc /scannow',
+                    description: 'Verify all system files are now healthy'
+                },
+                {
+                    name: '6️⃣ Analyze Component Store',
+                    command: 'Dism.exe /Online /Cleanup-Image /AnalyzeComponentStore',
+                    description: 'Check if component cleanup is recommended'
+                },
+                {
+                    name: '7️⃣ Component Cleanup',
+                    command: 'Dism.exe /Online /Cleanup-Image /StartComponentCleanup',
+                    description: 'Remove old components to free disk space'
+                }
+            ],
+            'Windows Update': [
+                {
+                    name: '1️⃣ Install NuGet Provider',
+                    command: 'Install-PackageProvider -Name NuGet -Force',
+                    description: 'Install NuGet package provider (required for PSWindowsUpdate module)'
+                },
+                {
+                    name: '2️⃣ Install PSWindowsUpdate Module',
+                    command: 'Install-Module -Name PSWindowsUpdate -Force',
+                    description: 'Download and install the Windows Update PowerShell module'
+                },
+                {
+                    name: '3️⃣ Import Module',
+                    command: 'Import-Module PSWindowsUpdate',
+                    description: 'Load the PSWindowsUpdate module into current session'
+                },
+                {
+                    name: '4️⃣ Check Available Updates',
+                    command: 'Get-WindowsUpdate',
+                    description: 'List all available Windows updates without installing'
+                },
+                {
+                    name: '5️⃣ Install Updates (No Reboot)',
+                    command: 'Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot',
+                    description: 'Install all updates but skip automatic reboot'
+                },
+                {
+                    name: '6️⃣ Install Updates (Auto Reboot)',
+                    command: 'Get-WindowsUpdate -AcceptAll -Install -AutoReboot',
+                    description: 'Install all updates and reboot automatically if needed'
+                },
+                {
+                    name: 'View Update History',
+                    command: 'Get-WUHistory -Last 20',
+                    description: 'Show the last 20 installed Windows updates'
+                },
+                {
+                    name: '⚙️ Bypass Execution Policy',
+                    command: 'Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process',
+                    description: 'Temporarily allow script execution for current PowerShell session only'
+                }
+            ],
+            'Microsoft 365': [
+                {
+                    name: 'Connect to Exchange Online',
+                    command: 'Connect-ExchangeOnline -UserPrincipalName admin@domain.com',
+                    description: 'Authenticate to Exchange Online PowerShell management'
+                },
+                {
+                    name: 'Grant calendar permissions',
+                    command: 'Add-MailboxFolderPermission -Identity "User1@domain.com:\\Calendar" -User "User2@domain.com" -AccessRights Reviewer',
+                    description: 'Give User2 access to User1\'s calendar. Other common AccessRights: Owner, PublishingEditor, Editor, PublishingAuthor, Author, NonEditingAuthor, Reviewer, Contributor, AvailabilityOnly, LimitedDetails'
+                },
+                {
+                    name: 'Import AD Sync module',
+                    command: 'Import-Module ADSync',
+                    description: 'Load Azure AD Connect synchronization module'
+                },
+                {
+                    name: 'Run Delta Sync',
+                    command: 'Start-ADSyncSyncCycle -PolicyType Delta',
+                    description: 'Sync only changes from on-prem AD to Azure AD (faster than full sync)'
+                },
+                {
+                    name: 'Fix uppercase SMTP address',
+                    command: 'Set-Mailbox flast@domain.com -EmailAddresses @{add="SMTP:flast@domain.com"; remove="SMTP:FLast@domain.com"}',
+                    description: 'Correct improperly capitalized primary SMTP address (uppercase SMTP = primary)'
+                },
+                {
+                    name: 'Verify email addresses',
+                    command: 'Get-Mailbox user@domain.com | Select PrimarySmtpAddress,EmailAddresses',
+                    description: 'Display all email addresses associated with a mailbox'
+                },
+                {
+                    name: 'List all mailboxes',
+                    command: 'Get-Mailbox -ResultSize Unlimited | Select DisplayName,PrimarySmtpAddress',
+                    description: 'Show all user mailboxes with email addresses'
+                },
+                {
+                    name: 'Check mailbox size',
+                    command: 'Get-MailboxStatistics -Identity user@domain.com | Select DisplayName,TotalItemSize',
+                    description: 'View total mailbox storage usage for specific user'
+                },
+                {
+                    name: 'Add mailbox permissions',
+                    command: 'Add-MailboxPermission -Identity shared@domain.com -User user@domain.com -AccessRights FullAccess',
+                    description: 'Grant full access to shared mailbox'
+                },
+                {
+                    name: 'List distribution groups',
+                    command: 'Get-DistributionGroup | Select DisplayName,PrimarySmtpAddress',
+                    description: 'Show all distribution groups and their email addresses'
+                },
+                {
+                    name: 'List all Teams',
+                    command: 'Get-Team | Select DisplayName,GroupId,Visibility',
+                    description: 'Show all Microsoft Teams with IDs and privacy settings'
+                },
+                {
+                    name: 'Add user to Team',
+                    command: 'Add-TeamUser -GroupId <TeamID> -User user@domain.com -Role Member',
+                    description: 'Add member to existing Microsoft Team'
+                },
+                {
+                    name: 'Check user licenses',
+                    command: 'Get-MsolUser -UserPrincipalName user@domain.com | Select DisplayName,Licenses',
+                    description: 'View assigned Microsoft 365 licenses for user'
+                },
+                {
+                    name: 'Reset user password',
+                    command: 'Set-MsolUserPassword -UserPrincipalName user@domain.com -NewPassword "P@ssw0rd!" -ForceChangePassword $true',
+                    description: 'Reset user password and require change at next login'
+                }
+            ]
+
+        };
+
+        let activeFilter = 'all';
+
+        function renderCommands(searchTerm = '') {
+            const container = document.getElementById('commandsContainer');
+            const noResults = document.getElementById('noResults');
+            container.innerHTML = '';
+            let hasResults = false;
+            let commandCount = 0;
+
+            Object.keys(commands).forEach((category, index) => {
+                if (activeFilter !== 'all' && activeFilter !== category) {
+                    return;
+                }
+
+                const filteredCommands = commands[category].filter(cmd => {
+                    const searchLower = searchTerm.toLowerCase();
+                    return cmd.name.toLowerCase().includes(searchLower) ||
+                        cmd.command.toLowerCase().includes(searchLower) ||
+                        cmd.description.toLowerCase().includes(searchLower) ||
+                        category.toLowerCase().includes(searchLower);
+                });
+
+                if (filteredCommands.length === 0) return;
+
+                hasResults = true;
+                commandCount += filteredCommands.length;
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
+                section.style.animationDelay = `${index * 0.1}s`;
+
+                const categoryIcons = {
+                    'PowerShell': '⚡',
+                    'Command Prompt': '💻',
+                    'Microsoft 365': '☁️',
+                    'Windows Repair': '🔧',
+                    'Windows Update': '🔄'
+                };
+
+                // Create header
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.innerHTML = `
+    <span class="category-icon">${categoryIcons[category] || '⚡'}</span>
+    <h2 class="category-title">${category}</h2>
+`;
+
+                // Create grid container
+                const grid = document.createElement('div');
+                grid.className = 'commands-grid';
+
+                // Add each command card
+                filteredCommands.forEach(cmd => {
+                    const card = document.createElement('div');
+                    card.className = 'command-card';
+
+                    // Set data-command directly using setAttribute (avoids template literal issues)
+                    card.setAttribute('data-command', cmd.command);
+
+                    card.onclick = function () { copyCommandFromData(this); };
+
+                    // Use innerHTML for the rest (doesn't contain the problematic data-command)
+                    card.innerHTML = `
+        <div class="command-header">
+            <div class="command-name">${cmd.name}</div>
+            <button class="copy-btn" onclick="event.stopPropagation(); copyCommandFromData(this.parentElement.parentElement)">
+                Copy
+            </button>
+        </div>
+        <div class="command-code">${escapeHtml(cmd.command)}</div>
+        <div class="command-description">${cmd.description}</div>
+    `;
+
+                    grid.appendChild(card);
+                });
+
+                section.appendChild(header);
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+
+            noResults.style.display = hasResults ? 'none' : 'block';
+
+            // Update stats
+            const totalCommands = Object.values(commands).reduce((sum, cats) => sum + cats.length, 0);
+            document.getElementById('totalCommands').textContent = searchTerm ? commandCount : totalCommands;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function copyCommand(element, command) {
+            const unescaped = document.createElement('textarea');
+            unescaped.innerHTML = command;
+            const text = unescaped.value;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = element.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function copyCommandFromData(element) {
+            const command = element.getAttribute('data-command');
+
+            // Debug - log what we're getting
+            console.log('Raw attribute:', command);
+            console.log('Length:', command ? command.length : 0);
+
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = command;
+            const decodedCommand = textarea.value;
+
+            console.log('Decoded command:', decodedCommand);
+            console.log('Decoded length:', decodedCommand.length);
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(decodedCommand).then(() => {
+                console.log('Successfully copied:', decodedCommand);
+
+                const btn = element.querySelector('.copy-btn');
+                if (!btn) return;
+
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy failed:', err);
+            });
+        }
+        function setupFilters() {
+            const filtersContainer = document.getElementById('filters');
+            const categories = ['all', ...Object.keys(commands)];
+
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                if (cat === 'all') btn.classList.add('active');
+                btn.textContent = cat === 'all' ? 'All Commands' : cat;
+                btn.onclick = () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeFilter = cat;
+                    renderCommands(document.getElementById('searchInput').value);
+                };
+                filtersContainer.appendChild(btn);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderCommands(e.target.value);
+        });
+
+        // Initialize
+        setupFilters();
+        renderCommands();
+        document.getElementById('categoryCount').textContent = Object.keys(commands).length;
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Focus search on / key
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            // Clear search on Escape
+            if (e.key === 'Escape') {
+                document.getElementById('searchInput').value = '';
+                renderCommands();
+            }
+        });
+    </script>
+</body>
+
+</html>
