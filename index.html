@@ -572,6 +572,84 @@
                     description: 'Temporarily allow script execution for current PowerShell session only'
                 }
             ],
+
+            'Winget': [
+                {
+                    name: 'Install winget',
+                    command: 'Add-AppxPackage -Path "https://aka.ms/getwinget"',
+                    description: 'Install App Installer / winget so the PC can use winget commands'
+                },
+                {
+                    name: 'Install Adobe Acrobat Reader',
+                    command: 'winget install --id Adobe.Acrobat.Reader.64-bit -e',
+                    description: 'Install Adobe Acrobat Reader 64-bit'
+                },
+                {
+                    name: 'Install Zoom',
+                    command: 'winget install --id Zoom.Zoom -e',
+                    description: 'Install Zoom desktop client'
+                },
+                {
+                    name: 'Install 7-Zip',
+                    command: 'winget install --id 7zip.7zip -e',
+                    description: 'Install 7-Zip file archiver'
+                },
+                {
+                    name: 'Install Google Chrome',
+                    command: 'winget install --id Google.Chrome -e',
+                    description: 'Install Google Chrome browser'
+                },
+                {
+                    name: 'Install Dell Command | Update',
+                    command: 'winget install --id Dell.CommandUpdate.Universal -e',
+                    description: 'Install Dell Command | Update for driver and BIOS updates'
+                },
+                {
+                    name: 'Install .NET Runtime 8',
+                    command: 'winget install --id Microsoft.DotNet.Runtime.8 -e',
+                    description: 'Install Microsoft .NET 8 desktop/runtime components'
+                },
+                {
+                    name: 'Install Microsoft Teams',
+                    command: 'winget install --id Microsoft.Teams -e',
+                    description: 'Install Microsoft Teams'
+                },
+                {
+                    name: 'Install VLC Media Player',
+                    command: 'winget install --id VideoLAN.VLC -e',
+                    description: 'Install VLC media player'
+                },
+                {
+                    name: 'Install Notepad++',
+                    command: 'winget install --id Notepad++.Notepad++ -e',
+                    description: 'Install Notepad++ text editor'
+                },
+                {
+                    name: 'Install Visual Studio Code',
+                    command: 'winget install --id Microsoft.VisualStudioCode -e',
+                    description: 'Install Visual Studio Code'
+                },
+                {
+                    name: 'Install PuTTY',
+                    command: 'winget install --id PuTTY.PuTTY -e',
+                    description: 'Install PuTTY SSH and terminal client'
+                },
+                {
+                    name: 'Install FileZilla',
+                    command: 'winget install --id TimKosse.FileZilla.Client -e',
+                    description: 'Install FileZilla FTP client'
+                },
+                {
+                    name: 'Install WatchGuard VPN',
+                    command: 'winget install --id WatchGuard.MobileVPN -e',
+                    description: 'Install WatchGuard Mobile VPN'
+                },
+                {
+                    name: 'Install SonicWall NetExtender VPN',
+                    command: 'winget install --id SonicWall.NetExtender -e',
+                    description: 'Install SonicWall NetExtender VPN client'
+                }
+            ],
             'Microsoft 365': [
                 {
                     name: 'Connect to Exchange Online',
@@ -683,7 +761,8 @@
                     'Command Prompt': '💻',
                     'Microsoft 365': '☁️',
                     'Windows Repair': '🔧',
-                    'Windows Update': '🔄'
+                    'Windows Update': '🔄',
+                    'Winget': '📦'
                 };
 
                 // Create header
