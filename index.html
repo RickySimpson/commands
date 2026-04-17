@@ -224,7 +224,8 @@
         .stat-number { font-size: 2.7rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: var(--stat-number-effect); }
         .stat-label { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
 
-        .search-container { position: sticky; top: 20px; z-index: 100; margin-bottom: 40px; background: var(--bg-secondary); padding: 28px; border-radius: var(--panel-radius); border: 1px solid var(--border-color); box-shadow: 0 20px 54px var(--shadow-color); backdrop-filter: var(--panel-blur); -webkit-backdrop-filter: var(--panel-blur); }
+        .search-container { position: sticky; top: 20px; z-index: 100; margin-bottom: 52px; background: var(--bg-secondary); padding: 28px; border-radius: var(--panel-radius); border: 1px solid var(--border-color); box-shadow: 0 20px 54px var(--shadow-color); backdrop-filter: var(--panel-blur); -webkit-backdrop-filter: var(--panel-blur); }
+        #commandsContainer { padding-top: 8px; }
         .search-box { position: relative; }
         .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.15rem; }
         #searchInput { width: 100%; padding: 18px 20px 18px 55px; background: var(--input-bg); border: 1.5px solid var(--border-color); border-radius: 18px; color: var(--text-primary); font-size: 1.05rem; font-family: 'JetBrains Mono', monospace; transition: all 0.25s ease; }
@@ -232,7 +233,7 @@
         #searchInput::placeholder { color: var(--text-muted); }
 
         .toolbar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; margin-top: 20px; }
-        .filters { display: flex; gap: 10px; flex-wrap: nowrap; min-width: 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .filters { display: flex; gap: 10px; flex-wrap: nowrap; min-width: 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding-top: 6px; padding-bottom: 2px; margin-top: -6px; }
         .filters::-webkit-scrollbar { display: none; }
         .theme-switcher { position: relative; margin-left: auto; flex: 0 0 auto; justify-self: end; }
         .theme-trigger, .filter-btn, .copy-btn { background: var(--button-bg); border: 1px solid var(--border-color); color: var(--text-secondary); box-shadow: var(--chip-shadow); }
@@ -263,10 +264,10 @@
         .category-title { letter-spacing: var(--title-spacing); text-transform: var(--title-transform); font-size: 1.8rem; font-weight: 800; color: var(--text-primary); white-space: nowrap; }
 
         .commands-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-        .command-card { background: var(--bg-card); background-image: var(--card-pattern); border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: 20px; transition: all 0.28s ease; cursor: pointer; position: relative; overflow: hidden; isolation: isolate; box-shadow: 0 8px 20px rgba(0,0,0,0.08); backdrop-filter: var(--panel-blur); -webkit-backdrop-filter: var(--panel-blur); }
+        .command-card { background: var(--bg-card); background-image: var(--card-pattern); border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: 20px; transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease; cursor: pointer; position: relative; overflow: hidden; isolation: isolate; box-shadow: 0 8px 20px rgba(0,0,0,0.08); backdrop-filter: var(--panel-blur); -webkit-backdrop-filter: var(--panel-blur); }
         .command-card::before { content: ''; position: absolute; inset: 0 auto auto 0; width: 100%; height: 4px; background: var(--header-line); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
         .command-card::after { content: ''; position: absolute; inset: 0; background: var(--card-overlay); pointer-events: none; z-index: -1; }
-        .command-card:hover { border-color: color-mix(in srgb, var(--accent-primary) 55%, transparent); transform: translateY(-4px); box-shadow: var(--card-hover-shadow); }
+        .command-card:hover { border-color: color-mix(in srgb, var(--accent-primary) 55%, transparent); transform: scale(1.012); box-shadow: var(--card-hover-shadow); z-index: 2; }
         .command-card:hover::before { transform: scaleX(1); }
         .command-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 12px; }
         .command-name { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
