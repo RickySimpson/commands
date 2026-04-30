@@ -527,6 +527,11 @@ const commands = {
                     description: 'Show the last 20 installed Windows updates'
                 },
                 {
+                    name: Steps 1 through 5',
+                    command: 'Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force; Install-PackageProvider -Name NuGet -Force; Install-Module -Name PSWindowsUpdate -Force; Import-Module PSWindowsUpdate; Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot',
+                    description: 'Install NuGet, Install-Module, Import-Module, Install Updates (No Reboot)'
+                },
+                {
                     name: '⚙️ Bypass Execution Policy',
                     command: 'Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process',
                     description: 'Temporarily allow script execution for current PowerShell session only'
