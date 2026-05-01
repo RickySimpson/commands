@@ -528,28 +528,7 @@ const commands = {
                 },
                 {
                     name: 'Steps 1 through 5',
-                    command: 'Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-
-Write-Host ""
-Write-Host "===== STEP 1: Installing NuGet Package Provider =====" -ForegroundColor Cyan
-Install-PackageProvider -Name NuGet -Force | Out-Host
-
-Write-Host ""
-Write-Host "===== STEP 2: Installing PSWindowsUpdate Module =====" -ForegroundColor Cyan
-Install-Module -Name PSWindowsUpdate -Force | Out-Host
-
-Write-Host ""
-Write-Host "===== STEP 3: Importing PSWindowsUpdate Module =====" -ForegroundColor Cyan
-Import-Module PSWindowsUpdate
-Write-Host "PSWindowsUpdate module imported successfully." -ForegroundColor Green
-
-Write-Host ""
-Write-Host "===== STEP 4: Installing Windows Updates =====" -ForegroundColor Cyan
-Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot | Out-Host
-
-Write-Host ""
-Write-Host "===== COMPLETE =====" -ForegroundColor Green
-Write-Host "Updates were installed. Reboot may still be required." -ForegroundColor Yellow',
+                    command: 'Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force; Install-PackageProvider -Name NuGet -Force; Install-Module -Name PSWindowsUpdate -Force; Import-Module PSWindowsUpdate; Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot',
                     description: 'Install NuGet, Install-Module, Import-Module, Install Updates (No Reboot)'
                 },
                 {
