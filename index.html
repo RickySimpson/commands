@@ -21,18 +21,22 @@
       <div class="brand"><span class="brand-icon" aria-hidden="true">&gt;_</span><div><p class="eyebrow">RICKY'S TOOLKIT</p><h1>Command Reference</h1></div></div>
       <p class="catalog-summary" id="catalogSummary"></p>
     </header>
+    <div class="workspace">
+    <aside class="sidebar" aria-label="Library navigation"><p class="nav-label">LIBRARY</p><nav id="filters" aria-label="Command categories"></nav><button type="button" id="favoritesOnly" aria-pressed="false">☆ Favorites</button><p class="sidebar-help">Select a command to see details.<br>Copy it with one click.</p></aside>
+    <div class="library">
     <section class="search-panel" aria-label="Find commands">
-      <label for="searchInput">Find your next command</label>
+      <label class="sr-only" for="searchInput">Find your next command</label>
       <div class="search-box"><span aria-hidden="true" class="search-icon">⌕</span><input type="search" id="searchInput" placeholder="Search your command library…" autocomplete="off"><button id="clearSearch" type="button" hidden>Clear</button><kbd aria-hidden="true">/</kbd></div>
-      <div class="toolbar"><nav id="filters" aria-label="Command categories"></nav><label class="mobile-category" for="categorySelect">Category<select id="categorySelect"></select></label></div>
+      <div class="toolbar"><label class="mobile-category" for="categorySelect">Category<select id="categorySelect"></select></label></div>
     </section>
     <div class="results-toolbar">
       <p id="resultCount" role="status" aria-live="polite" aria-atomic="true"></p>
-      <div class="view-controls"><button type="button" id="favoritesOnly" aria-pressed="false">☆ Favorites</button><div role="group" aria-label="View"><button type="button" id="cardsView" aria-pressed="true">Cards</button><button type="button" id="listView" aria-pressed="false">List</button></div></div>
+      <span class="results-hint">Select a row for details</span>
     </div>
     <main id="commandsContainer" tabindex="-1"></main>
     <div id="noResults" hidden><h2>No matching commands</h2><p>Try another search, category, or save a favorite using the star button.</p><button type="button" id="resetFilters">Reset filters</button></div>
     <noscript><p>This reference needs JavaScript to display and search commands. Please enable JavaScript and reload.</p></noscript>
+    </div></div>
     <footer>Built for everyday IT work. <span>Press <kbd>/</kbd> to search · <kbd>Esc</kbd> to clear</span></footer>
   </div>
   <div id="copyStatus" role="status" aria-live="polite" aria-atomic="true"></div>

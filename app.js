@@ -9,11 +9,9 @@ const entries = Object.entries(commands).flatMap(([category, items]) => items.ma
 let activeFilter = 'all';
 let favoritesOnly = false;
 let favorites = new Set();
-let view = 'cards';
 try {
     const saved = JSON.parse(localStorage.getItem('commandFavorites') || '[]');
     if (Array.isArray(saved)) favorites = new Set(saved.filter(id => entries.some(item => item.id === id)));
-    if (localStorage.getItem('commandView') === 'list') view = 'list';
 } catch { /* The reference still works when storage is unavailable. */ }
 
 function savePreference(key, value) {
@@ -83,12 +81,26 @@ function docsFor(item) {
     };
     return pages[item.category];
 }
-function renderCard(item) {
-    const card = element('article', 'command-card');
+function renderRow(item) {
+    const card = element('article', 'command-row');
     card.id = item.id;
-    const header = element('div', 'command-header');
-    const title = element('h3', '', item.name);
-    const actions = element('div', 'card-actions');
+    const header = element('div', 'row-summary');
+    const panel = element('div', 'row-details');
+    panel.id = item.id + '-details';
+    panel.hidden = true;
+    const toggle = button('', 'Details: ' + item.name, () => {
+        panel.hidden = !panel.hidden;
+        toggle.setAttribute('aria-expanded', String(!panel.hidden));
+    });
+    toggle.className = 'row-toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', panel.id);
+    const stepMatch = item.name.match(/^([1-7])/);
+    const workflow = ['Windows Repair', 'Windows Update'].includes(item.category);
+    const titleText = workflow ? item.name.replace(/^[1-7]\uFE0F?\u20E3?\s*/, '') : item.name;
+    if (workflow) toggle.append(element('span', 'step-number', stepMatch ? stepMatch[1] : '•'));
+    toggle.append(element('span', 'row-name', titleText), element('code', 'code-preview', item.command.replace(/\n/g, '  ')), element('span', 'chevron', '›'));
+    const actions = element('div', 'row-actions');
     const favorite = button(favorites.has(item.id) ? '★' : '☆', 'Favorite: ' + item.name, () => {
         if (favorites.has(item.id)) favorites.delete(item.id); else favorites.add(item.id);
         savePreference('commandFavorites', JSON.stringify([...favorites]));
@@ -102,8 +114,8 @@ function renderCard(item) {
     favorite.className = 'favorite-btn';
     favorite.setAttribute('aria-pressed', String(favorites.has(item.id)));
     const copy = button('Copy', 'Copy ' + item.name, () => copyText(item.command, 'Copied: ' + item.name, copy));
-    actions.append(favorite, copy);
-    header.append(title, actions);
+    actions.append(copy);
+    header.append(favorite, toggle, actions);
     const badges = element('div', 'badges');
     badgesFor(item).forEach(tag => badges.append(element('span', 'badge' + (/restart|Interrupts|Changes/.test(tag) ? ' attention' : ''), tag)));
     const pre = element('pre');
@@ -126,8 +138,9 @@ function renderCard(item) {
     });
     wrap.setAttribute('aria-pressed', 'true');
     footer.append(link, docs, wrap);
-    card.append(header, badges, pre, element('p', 'command-description', item.description), footer);
-    if (item.reviewed) card.append(element('p', 'reviewed', 'Docs reviewed ' + item.reviewed));
+    panel.append(badges, pre, element('p', 'command-description', item.description), footer);
+    card.append(header, panel);
+    if (item.reviewed) panel.append(element('p', 'reviewed', 'Docs reviewed ' + item.reviewed));
     return card;
 }
 function renderCommands() {
@@ -138,7 +151,6 @@ function renderCommands() {
             [item.name, item.command, item.description, item.category].join(' ').toLowerCase().includes(term)));
     const container = $('commandsContainer');
     container.replaceChildren();
-    container.classList.toggle('list-view', view === 'list');
     for (const category of Object.keys(commands)) {
         const items = matches.filter(item => item.category === category);
         if (!items.length) continue;
@@ -148,9 +160,20 @@ function renderCommands() {
         heading.id = 'category-' + slug(category);
         section.setAttribute('aria-labelledby', heading.id);
         header.append(heading, element('span', 'category-count', String(items.length)));
-        const grid = element('div', 'commands-grid');
-        items.forEach(item => grid.append(renderCard(item)));
-        section.append(header, grid);
+        const workflow = ['Windows Repair', 'Windows Update'].includes(category);
+        const grid = element(workflow ? 'ol' : 'div', 'command-list' + (workflow ? ' workflow' : ''));
+        items.forEach(item => {
+            if (workflow) {
+                const li = element('li');
+                li.append(renderRow(item));
+                grid.append(li);
+            } else grid.append(renderRow(item));
+        });
+        if (workflow) header.append(element('span', 'workflow-label', 'Workflow'));
+        if (category === 'Windows Update') section.append(element('p', 'workflow-note', 'Complete setup steps 1–3 as needed, check for updates, then choose either installation option 5 or 6.'));
+        if (category === 'Windows Repair') section.append(element('p', 'workflow-note', 'Follow the scan and repair sequence. Review the component-store analysis before optional cleanup.'));
+        section.prepend(header);
+        section.append(grid);
         container.append(section);
     }
     $('resultCount').textContent = `${matches.length} of ${entries.length} commands · ${activeFilter === 'all' ? 'All categories' : activeFilter}${favoritesOnly ? ' · Favorites' : ''}`;
@@ -182,15 +205,6 @@ $('favoritesOnly').addEventListener('click', () => {
     $('favoritesOnly').setAttribute('aria-pressed', String(favoritesOnly));
     renderCommands();
 });
-function setView(nextView, persist = true) {
-    view = nextView;
-    $('cardsView').setAttribute('aria-pressed', String(view === 'cards'));
-    $('listView').setAttribute('aria-pressed', String(view === 'list'));
-    if (persist) savePreference('commandView', view);
-    renderCommands();
-}
-$('cardsView').addEventListener('click', () => setView('cards'));
-$('listView').addEventListener('click', () => setView('list'));
 $('resetFilters').addEventListener('click', () => {
     searchInput.value = '';
     favoritesOnly = false;
@@ -206,8 +220,10 @@ function revealHash() {
     $('favoritesOnly').setAttribute('aria-pressed', 'false');
     setFilter(item.category);
     const card = $(item.id);
-    card.tabIndex = -1;
-    card.focus({preventScroll:true});
+    card.querySelector('.row-details').hidden = false;
+    const toggle = card.querySelector('.row-toggle');
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.focus({preventScroll:true});
     card.scrollIntoView({block:'start'});
 }
 window.addEventListener('hashchange', revealHash);
@@ -219,5 +235,5 @@ document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && document.activeElement === searchInput) clearSearch();
 });
 $('catalogSummary').textContent = `${entries.length} commands · ${Object.keys(commands).length} categories`;
-setView(view, false);
+renderCommands();
 revealHash();
