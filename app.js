@@ -197,9 +197,15 @@ for (const category of ['all', ...Object.keys(commands)]) {
     $('categorySelect').append(option);
 }
 function clearSearch() { searchInput.value = ''; renderCommands(); searchInput.focus(); }
+const mailboxOption = element('option', '', 'Shared mailbox');
+mailboxOption.value = 'shared-mailbox';
+$('categorySelect').append(mailboxOption);
 searchInput.addEventListener('input', renderCommands);
 $('clearSearch').addEventListener('click', clearSearch);
-$('categorySelect').addEventListener('change', event => setFilter(event.target.value));
+$('categorySelect').addEventListener('change', event => {
+    if (event.target.value === 'shared-mailbox') location.href = 'shared-mailbox-automapping.html';
+    else setFilter(event.target.value);
+});
 $('favoritesOnly').addEventListener('click', () => {
     favoritesOnly = !favoritesOnly;
     $('favoritesOnly').setAttribute('aria-pressed', String(favoritesOnly));
@@ -213,6 +219,15 @@ $('resetFilters').addEventListener('click', () => {
     searchInput.focus();
 });
 function revealHash() {
+    if (location.hash === '#favorites' || location.hash.startsWith('#category-')) {
+        const category = Object.keys(commands).find(name => '#category-' + slug(name) === location.hash);
+        if (!category && location.hash !== '#favorites') return;
+        searchInput.value = '';
+        favoritesOnly = location.hash === '#favorites';
+        $('favoritesOnly').setAttribute('aria-pressed', String(favoritesOnly));
+        setFilter(category || 'all');
+        return;
+    }
     const item = entries.find(entry => '#' + entry.id === location.hash);
     if (!item) return;
     searchInput.value = '';

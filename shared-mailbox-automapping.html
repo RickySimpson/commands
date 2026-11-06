@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Build and copy an Exchange Online PowerShell script to set shared mailbox FullAccess automapping for an individual delegate.">
+  <meta name="theme-color" content="#f6f8fc">
+  <title>Shared mailbox automapping | Command Reference</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=7239e7bd9263">
+  <link rel="stylesheet" href="mailbox.css?v=4a0f2095b883">
+  <script src="commands.js?v=1d3e3747048d" defer></script>
+  <script src="mailbox.js?v=70ed9d4d3bc2" defer></script>
+</head>
+<body class="mailbox-page">
+  <a class="skip-link" href="#mailboxTool">Skip to mailbox tool</a>
+  <div class="container">
+    <header class="header">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">&gt;_</span><div><p class="eyebrow">RICKY'S TOOLKIT</p><a class="site-title" href="index.html">Command Reference</a></div></div>
+      <p class="catalog-summary" id="catalogSummary"></p>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar" aria-label="Library navigation"><p class="nav-label">LIBRARY</p><nav id="filters" aria-label="Command categories"></nav><a class="library-tool-link" href="shared-mailbox-automapping.html" aria-current="page">Shared mailbox</a><a class="library-favorites-link" href="index.html#favorites">☆ Favorites</a><p class="sidebar-help">Build and copy a script.<br>Run it in Exchange Online PowerShell.</p></aside>
+      <main class="library mailbox-tool" id="mailboxTool" tabindex="-1">
+        <label class="mobile-category tool-category" for="toolCategory">Library<select id="toolCategory"></select></label>
+
+    <div class="intro"><h1 class="tool-title">Shared mailbox automapping</h1><p>Build a reviewable Exchange Online PowerShell script for one shared mailbox and one delegate. Choose whether Outlook should add the mailbox automatically.</p></div>
+    <div class="mailbox-workspace">
+      <section class="panel form-panel" aria-labelledby="details-title">
+        <header><h2 id="details-title">Access details</h2><p class="sub">Both addresses stay in this browser page.</p></header>
+        <div class="field"><label class="field-label" for="mailbox">Shared mailbox email</label><input class="text-input" id="mailbox" type="email" inputmode="email" autocomplete="off" spellcheck="false" placeholder="helpdesk@contoso.com" aria-describedby="mailbox-hint" required><p class="hint" id="mailbox-hint">Enter the shared mailbox’s SMTP address.</p></div>
+        <div class="field"><label class="field-label" for="delegate">Delegate user email</label><input class="text-input" id="delegate" type="email" inputmode="email" autocomplete="off" spellcheck="false" placeholder="alex@contoso.com" aria-describedby="delegate-hint" required><p class="hint" id="delegate-hint">Enter the individual user receiving FullAccess.</p></div>
+        <fieldset><legend>Outlook automapping</legend><div class="segmented"><label><input type="radio" name="automapping" value="false" checked><span>Off</span></label><label><input type="radio" name="automapping" value="true"><span>On</span></label></div><p class="choice-note" id="choice-note">Off keeps the mailbox out of automatic Outlook profile loading.</p></fieldset>
+        <div class="summary" aria-live="polite"><p class="summary-title">Change preview</p><dl><div><dt>Mailbox</dt><dd id="summary-mailbox">Waiting for address</dd></div><div><dt>Delegate</dt><dd id="summary-delegate">Waiting for address</dd></div><div><dt>Action</dt><dd id="summary-action">Set automapping off</dd></div></dl></div>
+      </section>
+      <section class="outputs" aria-labelledby="scripts-title">
+        <div class="caution" role="note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5m0 4h.01" stroke-linecap="round"/></svg><div><strong>Plan for a brief access interruption</strong><p>If a direct FullAccess grant exists, changing automapping removes it before re-adding it. Mailbox access and Outlook’s Autodiscover changes may take time to propagate. Run during an appropriate support window.</p></div></div>
+        <div class="outputs-heading"><div><h2 id="scripts-title">PowerShell scripts</h2><p>Copy the connection step first, then review and run the change.</p></div><div class="actions"><button class="button primary" id="copy-all" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4" stroke-linecap="round"/></svg>Copy entire script</button></div></div>
+        <article class="panel script-panel" aria-labelledby="connect-title"><div class="script-head"><div class="script-heading"><span class="step" aria-hidden="true">1</span><div><h3 id="connect-title">Connect to Exchange Online</h3><p>Run in a PowerShell session with the Exchange Online module.</p></div></div><button class="button" id="copy-connect" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4" stroke-linecap="round"/></svg>Copy connection</button></div><pre id="connect-code" tabindex="0"></pre></article>
+        <article class="panel script-panel" aria-labelledby="change-title"><div class="script-head"><div class="script-heading"><span class="step" aria-hidden="true">2</span><div><h3 id="change-title">Set FullAccess automapping</h3><p>Preflight checks, confirmation, change, and verification.</p></div></div><button class="button" id="copy-change" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4" stroke-linecap="round"/></svg>Copy change</button></div><pre id="change-code" class="empty" tabindex="0">Enter valid mailbox and delegate emails to generate the script.</pre></article>
+        <div class="explainer"><h2>What the script does</h2><ol><li>Checks that the target is a shared mailbox and the delegate is an individual mailbox user or mail user.</li><li>Reads the delegate’s direct, allowed FullAccess permission. It stops if the permission lookup fails or a direct deny exists.</li><li>Shows the resolved identities and asks for a <strong>Y</strong> before any change. If a direct grant exists, it removes that grant, then adds FullAccess with the selected automapping value. Otherwise it adds the grant.</li><li>Reads the resulting FullAccess permission. Exchange does not expose the automapping flag in this permission output, so verify Outlook behavior after propagation.</li></ol></div>
+        <p class="foot">Group-based access is not changed. This script changes FullAccess only; it does not grant Send As or Send on behalf. <a href="https://learn.microsoft.com/en-us/powershell/module/exchangepowershell/add-mailboxpermission?view=exchange-ps" target="_blank" rel="noopener noreferrer">Microsoft’s automapping guidance</a></p>
+      </section>
+    </div>
+  
+        <noscript><p>Enable JavaScript to generate and copy the mailbox scripts.</p></noscript>
+      </main>
+    </div>
+    <footer>Built for everyday IT work. <span>Script generation stays in your browser.</span></footer>
+  </div>
+  <div id="copy-status" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
