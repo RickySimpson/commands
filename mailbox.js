@@ -38,11 +38,96 @@
         const invalid = value !== '' && !validEmail(value);
         input.setAttribute('aria-invalid', String(invalid));
         hint.classList.toggle('error', invalid);
-        hint.textContent = invalid ? 'Enter a valid email address, such as alex@contoso.com.' : input === mailboxInput ? 'Enter the shared mailbox’s SMTP address.' : 'Enter the individual user receiving FullAccess.';
+        hint.textContent = invalid ? 'Enter a valid email address, such as alex@contoso.com.' : input === mailboxInput ? 'Enter the shared mailbox’s SMTP address.' : 'Enter the individual user receiving FullAccess and Send As.';
       }
       function buildChange(mailbox, delegate, auto) {
         const autoLiteral = auto ? '$true' : '$false';
-        return `# Run after connecting to Exchange Online. Review the targets and confirm at the prompt.\n& {\n    $mailbox = ${psQuote(mailbox)}\n    $delegate = ${psQuote(delegate)}\n    $autoMapping = ${autoLiteral}\n\n    try {\n        $target = Get-EXOMailbox -Identity $mailbox -ErrorAction Stop\n        if ($null -eq $target -or $target.RecipientTypeDetails -ne 'SharedMailbox') {\n            throw 'The target did not resolve to one shared mailbox.'\n        }\n        $principal = Get-EXORecipient -Identity $delegate -ErrorAction Stop\n        if ($null -eq $principal -or $principal.RecipientTypeDetails -notin @('UserMailbox', 'MailUser')) {\n            throw 'The delegate must resolve to an individual mailbox user or mail user.'\n        }\n        $mailboxId = $target.PrimarySmtpAddress.ToString()\n        $entries = @(Get-MailboxPermission -Identity $mailboxId -User $delegate -ErrorAction Stop)\n        $directDeny = @($entries | Where-Object {\n            -not $_.IsInherited -and $_.Deny -and $_.AccessRights -contains 'FullAccess'\n        })\n        if ($directDeny.Count -gt 0) { throw 'A direct FullAccess deny exists; review it manually.' }\n        $existing = @($entries | Where-Object {\n            -not $_.IsInherited -and -not $_.Deny -and $_.AccessRights -contains 'FullAccess'\n        })\n    } catch {\n        Write-Error "Preflight failed; no changes made: $($_.Exception.Message)"\n        return\n    }\n\n    Write-Host "Shared mailbox: $mailboxId"\n    Write-Host "Delegate: $($principal.PrimarySmtpAddress)"\n    Write-Host "Direct FullAccess grant found: $($existing.Count -gt 0)"\n    Write-Host "Requested automapping: $autoMapping"\n    Write-Warning 'Removing an existing grant briefly interrupts access. Outlook changes may take time to appear.'\n    $answer = Read-Host 'Type Y to apply this change'\n    if ($answer -cne 'Y') { Write-Host 'Cancelled; no changes made.'; return }\n\n    $removed = $false\n    try {\n        if ($existing.Count -gt 0) {\n            Remove-MailboxPermission -Identity $mailboxId -User $delegate -AccessRights FullAccess -InheritanceType All -Confirm:$false -ErrorAction Stop\n            $removed = $true\n        }\n        Add-MailboxPermission -Identity $mailboxId -User $delegate -AccessRights FullAccess -InheritanceType All -AutoMapping:${autoLiteral} -Confirm:$false -ErrorAction Stop | Out-Null\n    } catch {\n        Write-Error "Permission change failed: $($_.Exception.Message)"\n        if ($removed) { Write-Warning 'The direct FullAccess grant may now be absent. Restore it manually before leaving this task.' }\n        return\n    }\n\n    try {\n        $verified = @(Get-MailboxPermission -Identity $mailboxId -User $delegate -ErrorAction Stop | Where-Object {\n            -not $_.IsInherited -and -not $_.Deny -and $_.AccessRights -contains 'FullAccess'\n        })\n        if ($verified.Count -eq 0) { throw 'No direct allowed FullAccess grant was returned.' }\n        Write-Host 'Verified: direct allowed FullAccess is present.' -ForegroundColor Green\n        Write-Host 'The permission output does not show AutoMapping. Confirm Outlook behavior after propagation.'\n    } catch {\n        Write-Warning "The change ran, but verification did not confirm FullAccess: $($_.Exception.Message)"\n    }\n}`;
+        return `# Run after connecting to Exchange Online. Review the targets and confirm at the prompt.
+& {
+    $mailbox = ${psQuote(mailbox)}
+    $delegate = ${psQuote(delegate)}
+    $autoMapping = ${autoLiteral}
+
+    try {
+        $target = Get-EXOMailbox -Identity $mailbox -ErrorAction Stop
+        if ($null -eq $target -or $target.RecipientTypeDetails -ne 'SharedMailbox') {
+            throw 'The target did not resolve to one shared mailbox.'
+        }
+        $principal = Get-EXORecipient -Identity $delegate -ErrorAction Stop
+        if ($null -eq $principal -or $principal.RecipientTypeDetails -notin @('UserMailbox', 'MailUser')) {
+            throw 'The delegate must resolve to an individual mailbox user or mail user.'
+        }
+        $mailboxId = $target.PrimarySmtpAddress.ToString()
+        $entries = @(Get-MailboxPermission -Identity $mailboxId -User $delegate -ErrorAction Stop)
+        $directDeny = @($entries | Where-Object {
+            -not $_.IsInherited -and $_.Deny -and $_.AccessRights -contains 'FullAccess'
+        })
+        if ($directDeny.Count -gt 0) { throw 'A direct FullAccess deny exists; review it manually.' }
+        $existing = @($entries | Where-Object {
+            -not $_.IsInherited -and -not $_.Deny -and $_.AccessRights -contains 'FullAccess'
+        })
+        $sendAsEntries = @(Get-RecipientPermission -Identity $mailboxId -Trustee $delegate -ErrorAction Stop)
+        $sendAsDeny = @($sendAsEntries | Where-Object {
+            $_.AccessRights -contains 'SendAs' -and $_.AccessControlType -eq 'Deny'
+        })
+        if ($sendAsDeny.Count -gt 0) { throw 'A Send As deny exists; review it manually.' }
+        $sendAs = @($sendAsEntries | Where-Object {
+            $_.AccessRights -contains 'SendAs' -and $_.AccessControlType -eq 'Allow'
+        })
+    } catch {
+        Write-Error "Preflight failed; no changes made: $($_.Exception.Message)"
+        return
+    }
+
+    Write-Host "Shared mailbox: $mailboxId"
+    Write-Host "Delegate: $($principal.PrimarySmtpAddress)"
+    Write-Host "Direct FullAccess grant found: $($existing.Count -gt 0)"
+    Write-Host "Requested automapping: $autoMapping"
+    Write-Host "Existing Send As grant found: $($sendAs.Count -gt 0)"
+    Write-Host 'Requested permissions: FullAccess and Send As'
+    Write-Warning 'Removing an existing grant briefly interrupts access. Outlook changes may take time to appear.'
+    $answer = Read-Host 'Type Y to apply this change'
+    if ($answer -cne 'Y') { Write-Host 'Cancelled; no changes made.'; return }
+
+    $removed = $false
+    try {
+        if ($existing.Count -gt 0) {
+            Remove-MailboxPermission -Identity $mailboxId -User $delegate -AccessRights FullAccess -InheritanceType All -Confirm:$false -ErrorAction Stop
+            $removed = $true
+        }
+        Add-MailboxPermission -Identity $mailboxId -User $delegate -AccessRights FullAccess -InheritanceType All -AutoMapping:${autoLiteral} -Confirm:$false -ErrorAction Stop | Out-Null
+    } catch {
+        Write-Error "Permission change failed: $($_.Exception.Message)"
+        if ($removed) { Write-Warning 'The direct FullAccess grant may now be absent. Restore it manually before leaving this task.' }
+        return
+    }
+
+    # Preserve an existing Send As grant; add one only when it is absent.
+    try {
+        if ($sendAs.Count -eq 0) {
+            Add-RecipientPermission -Identity $mailboxId -Trustee $delegate -AccessRights SendAs -Confirm:$false -ErrorAction Stop | Out-Null
+        }
+    } catch {
+        Write-Error "FullAccess was configured, but granting Send As failed: $($_.Exception.Message)"
+        Write-Warning 'The change is incomplete. Review Send As permissions before reporting success.'
+        return
+    }
+
+    try {
+        $verified = @(Get-MailboxPermission -Identity $mailboxId -User $delegate -ErrorAction Stop | Where-Object {
+            -not $_.IsInherited -and -not $_.Deny -and $_.AccessRights -contains 'FullAccess'
+        })
+        if ($verified.Count -eq 0) { throw 'No direct allowed FullAccess grant was returned.' }
+        $verifiedSendAs = @(Get-RecipientPermission -Identity $mailboxId -Trustee $delegate -ErrorAction Stop | Where-Object {
+            $_.AccessRights -contains 'SendAs' -and $_.AccessControlType -eq 'Allow'
+        })
+        if ($verifiedSendAs.Count -eq 0) { throw 'No allowed Send As grant was returned.' }
+        Write-Host 'Verified: direct allowed FullAccess and Send As are present.' -ForegroundColor Green
+        Write-Host 'The permission output does not show AutoMapping. Confirm Outlook behavior after propagation.'
+    } catch {
+        Write-Warning "The change ran, but verification did not confirm FullAccess and Send As: $($_.Exception.Message)"
+    }
+}`;
       }
       function update() {
         const mailbox = mailboxInput.value.trim();
@@ -52,7 +137,7 @@
         setHint(delegateInput, 'delegate-hint', delegate);
         $('summary-mailbox').textContent = mailbox || 'Waiting for address';
         $('summary-delegate').textContent = delegate || 'Waiting for address';
-        $('summary-action').textContent = 'Set automapping ' + (auto ? 'on' : 'off');
+        $('summary-action').textContent = 'FullAccess + Send As; automapping ' + (auto ? 'on' : 'off');
         $('choice-note').textContent = auto ? 'On allows Outlook to add this mailbox to the delegate’s profile automatically.' : 'Off keeps the mailbox out of automatic Outlook profile loading.';
         const ready = validEmail(mailbox) && validEmail(delegate) && mailbox.toLowerCase() !== delegate.toLowerCase();
         if (mailbox && delegate && mailbox.toLowerCase() === delegate.toLowerCase()) {
