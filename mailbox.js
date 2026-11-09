@@ -131,6 +131,9 @@
       }
       function update() {
         const mailbox = mailboxInput.value.trim();
+        const webLink = validEmail(mailbox) ? 'https://outlook.office.com/mail/' + encodeURIComponent(mailbox).replace(/'/g, '%27').replace(/%40/g, '@') + '/' : '';
+        $('mailbox-web-link').value = webLink;
+        $('copy-mailbox-link').disabled = !webLink;
         const delegate = delegateInput.value.trim();
         const auto = document.querySelector('input[name="automapping"]:checked').value === 'true';
         setHint(mailboxInput, 'mailbox-hint', mailbox);
@@ -174,10 +177,15 @@
           }
           announce(label + ' copied to clipboard.');
         } catch {
-          announce('Copy was blocked. Select the script text and copy it manually.');
+          announce('Copy was blocked. Select the text and copy it manually.');
         }
       }
       mailboxInput.addEventListener('input', update);
+      $('copy-mailbox-link').addEventListener('click', () => {
+        const link = $('mailbox-web-link').value;
+        if (link) return copy(link, 'Mailbox link');
+      });
+      $('mailbox-web-link').addEventListener('click', event => event.target.select());
       delegateInput.addEventListener('input', update);
       document.querySelectorAll('input[name="automapping"]').forEach(input => input.addEventListener('change', update));
       $('copy-connect').addEventListener('click', () => copy(connectCode, 'Connection script'));

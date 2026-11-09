@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=7239e7bd9263">
-  <link rel="stylesheet" href="mailbox.css?v=4a0f2095b883">
+  <link rel="stylesheet" href="mailbox.css?v=8784d8767bb6">
   <script src="commands.js?v=1d3e3747048d" defer></script>
-  <script src="mailbox.js?v=ee0832e4cbb3" defer></script>
+  <script src="mailbox.js?v=f9197e601e66" defer></script>
 </head>
 <body class="mailbox-page">
   <a class="skip-link" href="#mailboxTool">Skip to mailbox tool</a>
@@ -34,6 +34,12 @@
         <div class="field"><label class="field-label" for="mailbox">Shared mailbox email</label><input class="text-input" id="mailbox" type="email" inputmode="email" autocomplete="off" spellcheck="false" placeholder="helpdesk@contoso.com" aria-describedby="mailbox-hint" required><p class="hint" id="mailbox-hint">Enter the shared mailbox’s SMTP address.</p></div>
         <div class="field"><label class="field-label" for="delegate">Delegate user email</label><input class="text-input" id="delegate" type="email" inputmode="email" autocomplete="off" spellcheck="false" placeholder="alex@contoso.com" aria-describedby="delegate-hint" required><p class="hint" id="delegate-hint">Enter the individual user receiving FullAccess and Send As.</p></div>
         <fieldset><legend>Outlook automapping</legend><div class="segmented"><label><input type="radio" name="automapping" value="false" checked><span>Off</span></label><label><input type="radio" name="automapping" value="true"><span>On</span></label></div><p class="choice-note" id="choice-note">Off keeps the mailbox out of automatic Outlook profile loading.</p></fieldset>
+        <div class="mailbox-link">
+          <label class="field-label" for="mailbox-web-link">Shared mailbox web link</label>
+          <input class="text-input" id="mailbox-web-link" type="text" readonly placeholder="Enter a shared mailbox email above" aria-describedby="mailbox-link-hint" spellcheck="false">
+          <button class="button" id="copy-mailbox-link" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 3 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" stroke-linecap="round"/></svg>Copy mailbox link</button>
+          <p class="hint" id="mailbox-link-hint">Send this link to the user. They sign in with their own work account and must already have access to the mailbox. The link does not grant access.</p>
+        </div>
         <div class="summary" aria-live="polite"><p class="summary-title">Change preview</p><dl><div><dt>Mailbox</dt><dd id="summary-mailbox">Waiting for address</dd></div><div><dt>Delegate</dt><dd id="summary-delegate">Waiting for address</dd></div><div><dt>Action</dt><dd id="summary-action">FullAccess + Send As; automapping off</dd></div></dl></div>
       </section>
       <section class="outputs" aria-labelledby="scripts-title">

@@ -61,3 +61,8 @@
 @media(max-width:1150px) { .mailbox-workspace { grid-template-columns:1fr; gap:22px; } .mailbox-tool .form-panel { position:static; display:grid; grid-template-columns:1fr 1fr; column-gap:22px; } .mailbox-tool .form-panel>header,.mailbox-tool .summary { grid-column:1/-1; } .mailbox-tool .summary dl { grid-template-columns:1fr 1fr; } }
 @media(max-width:700px) { .tool-category { margin:0 0 22px; } .site-title { font-size:18px; } .mailbox-tool .tool-title { font-size:22px; } .mailbox-tool .script-head p { display:none; } }
 @media(max-width:480px) { .mailbox-tool .form-panel { display:block; } .mailbox-tool .summary dl { grid-template-columns:1fr; } .mailbox-tool .text-input { font-size:16px; min-height:44px; } .mailbox-tool .button { min-height:44px; } .mailbox-tool .script-head { flex-wrap:wrap; } .mailbox-tool .script-head .button { margin-left:34px; } }
+
+/* Shared mailbox browser link, using the command library controls. */
+.mailbox-tool .mailbox-link { grid-column:1/-1; min-width:0; margin-top:22px; padding-top:16px; border-top:1px solid var(--border); }
+.mailbox-tool .mailbox-link .button { width:100%; margin-top:10px; }
+.mailbox-tool .mailbox-link .text-input { background:#f6f8fb; }
